@@ -24,7 +24,7 @@ import warnings
 
 import lang
 import ranking
-import types
+import types_
 
 
 __all__ = ['GooglePlaces', 'GooglePlacesError', 'GooglePlacesAttributeError',
@@ -262,6 +262,7 @@ class GooglePlaces(object):
         if language is not None:
             self._request_params['language'] = language
         self._add_required_param_keys()
+
         url, places_response = _fetch_remote_json(
                 GooglePlaces.NEARBY_SEARCH_API_URL, self._request_params)
         _validate_response(url, places_response)
@@ -437,10 +438,16 @@ class GooglePlacesSearchResult(object):
         for place in response['results']:
             self._places.append(Place(query_instance, place))
         self._html_attributions = response.get('html_attributions', [])
+        self._next_page_token   = response.get('next_page_token','')
 
     @property
     def places(self):
         return self._places
+
+    @property
+    def next_page_token(self):
+        """Returns the next_page_token for the specified response."""
+        return self._next_page_token
 
     @property
     def html_attributions(self):
