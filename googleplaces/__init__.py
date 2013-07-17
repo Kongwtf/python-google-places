@@ -206,7 +206,7 @@ class GooglePlaces(object):
 
     def nearby_search(self, language=lang.ENGLISH, keyword=None, location=None,
                lat_lng=None, name=None, radius=3200, rankby=ranking.PROMINENCE,
-               sensor=False, types=[]):
+               sensor=False, types=[], pagetoken=None):
         """Perform a nearby search using the Google Places API.
 
         One of either location or lat_lng are required, the rest of the keyword
@@ -261,15 +261,17 @@ class GooglePlaces(object):
             self._request_params['name'] = name
         if language is not None:
             self._request_params['language'] = language
+        if pagetoken is not None:
+            self._request_params['pagetoken'] = pagetoken
         self._add_required_param_keys()
 
         url, places_response = _fetch_remote_json(
                 GooglePlaces.NEARBY_SEARCH_API_URL, self._request_params)
         _validate_response(url, places_response)
-        return GooglePlacesSearchResult(self, places_response)
+        return GooglePlacesSearchResult(self, places_response, request_params=self._request_params)
 
     def text_search(self, query, language=lang.ENGLISH, lat_lng=None,
-                    radius=3200, types=[]):
+                    radius=3200, types=[], pagetoken=None):
         """Perform a text search using the Google Places API.
 
         Only the query kwarg is required, the rest of the keyword arguments
@@ -297,6 +299,8 @@ class GooglePlaces(object):
             self._request_params['types'] = '|'.join(types)
         if language is not None:
             self._request_params['language'] = language
+        if pagetoken is not None:
+            self._request_params['pagetoken'] = pagetoken            
         self._add_required_param_keys()
         url, places_response = _fetch_remote_json(
                 GooglePlaces.TEXT_SEARCH_API_URL, self._request_params)
@@ -433,12 +437,14 @@ class GooglePlaces(object):
 class GooglePlacesSearchResult(object):
     """Wrapper around the Google Places API query JSON response."""
 
-    def __init__(self, query_instance, response):
+    def __init__(self, query_instance, response, **kwargs):
         self._places = []
         for place in response['results']:
             self._places.append(Place(query_instance, place))
         self._html_attributions = response.get('html_attributions', [])
         self._next_page_token   = response.get('next_page_token','')
+        if kwargs.get('request_params'):
+            self._request_params= kwargs.get('request_params')
 
     @property
     def places(self):
@@ -448,6 +454,11 @@ class GooglePlacesSearchResult(object):
     def next_page_token(self):
         """Returns the next_page_token for the specified response."""
         return self._next_page_token
+
+    @property
+    def request_params(self):
+        """Returns the request_url."""
+        return self._request_params
 
     @property
     def html_attributions(self):
