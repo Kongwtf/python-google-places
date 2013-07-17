@@ -29,16 +29,18 @@ Prerequisites
 A Google API key with Places activated against it. Please check the Google API
 console, here: http://code.google.com/apis/console
 
+Rename types to types_ https://gist.github.com/olemb/1171411
 
 Usage
 ------
 
 .. _usage:
 
+
 Code is easier to understand than words, so let us dive right in ::
 
 
-    from googleplaces import GooglePlaces, types, lang
+    from googleplaces import GooglePlaces, types_, lang
 
     YOUR_API_KEY = 'AIzaSyAiFpFd85eMtfbvmVNEYuNds5TEF9FjIPI'
 
