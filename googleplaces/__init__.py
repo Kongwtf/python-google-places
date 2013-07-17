@@ -479,10 +479,23 @@ class Place(object):
         self._rating = place_data.get('rating')
         self._types = place_data.get('types')
         self._icon = place_data.get('icon')
+        opening_hours = place_data.get('opening_hours')
+        if opening_hours:
+            self._open_now = opening_hours.get('open_now')
+        else:
+            self._open_now = None
         if place_data.get('address_components') is None:
             self._details = None
         else:
             self._details = place_data
+
+    @property
+    def open_now(self):
+        """
+        open_now is a boolean value indicating if the Place is open at the current time.
+        """
+        return self._open_now
+
 
     @property
     def reference(self):
