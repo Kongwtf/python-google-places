@@ -188,6 +188,7 @@ class GooglePlaces(object):
                       'json?sensor=%s&key=%s')
     PHOTO_API_URL = 'https://maps.googleapis.com/maps/api/place/photo?'
 
+    DEFAULT_SEARCH_RADIUS = 25000
     MAXIMUM_SEARCH_RADIUS = 50000
     RESPONSE_STATUS_OK = 'OK'
     RESPONSE_STATUS_ZERO_RESULTS = 'ZERO_RESULTS'
@@ -205,7 +206,7 @@ class GooglePlaces(object):
         return self.nearby_search(**kwargs)
 
     def nearby_search(self, language=lang.ENGLISH, keyword=None, location=None,
-               lat_lng=None, name=None, radius=3200, rankby=ranking.PROMINENCE,
+               lat_lng=None, name=None, radius=DEFAULT_SEARCH_RADIUS, rankby=ranking.PROMINENCE,
                sensor=False, types=[], pagetoken=None):
         """Perform a nearby search using the Google Places API.
 
@@ -271,7 +272,7 @@ class GooglePlaces(object):
         return GooglePlacesSearchResult(self, places_response, request_params=self._request_params)
 
     def text_search(self, query, language=lang.ENGLISH, lat_lng=None,
-                    radius=3200, types=[], pagetoken=None):
+                    radius=DEFAULT_SEARCH_RADIUS, types=[], pagetoken=None):
         """Perform a text search using the Google Places API.
 
         Only the query kwarg is required, the rest of the keyword arguments
