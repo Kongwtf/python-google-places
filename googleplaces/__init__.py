@@ -98,14 +98,20 @@ def geocode_location(location, sensor=False):
         raise GooglePlacesError, error_detail
     return geo_response['results'][0]['geometry']['location']
 
-def _get_place_details(reference, api_key, sensor=False):
+def _get_place_details(reference, api_key, sensor=False, place_id=None):
     """Gets a detailed place response.
 
     keyword arguments:
     reference -- The unique Google reference for the required place.
     """
-    url, detail_response = _fetch_remote_json(GooglePlaces.DETAIL_API_URL,
-                                              {'placeid': reference,
+    if place_id is not None:
+        url, detail_response = _fetch_remote_json(GooglePlaces.DETAIL_API_URL,
+                                              {'place_id': place_id,
+                                               'sensor': str(sensor).lower(),
+                                               'key': api_key})
+    else:
+        url, detail_response = _fetch_remote_json(GooglePlaces.DETAIL_API_URL,
+                                              {'reference': reference,
                                                'sensor': str(sensor).lower(),
                                                'key': api_key})
     _validate_response(url, detail_response)
