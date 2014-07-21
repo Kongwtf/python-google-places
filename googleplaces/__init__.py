@@ -529,6 +529,17 @@ class Place(object):
         return self._reference
 
     @property
+    def place_id(self):
+        """Returns the unique stable identifier denoting this place.
+
+        This identifier MUST be used to retrieve information about this
+        place, but is guaranteed to be valid across sessions. It can be used
+        to consolidate data about this Place, and to verify the identity of a
+        Place across separate searches. See https://developers.google.com/places/documentation/details
+        """
+        return self._place_id
+
+    @property
     def id(self):
         """Returns the unique stable identifier denoting this place.
 
