@@ -105,7 +105,7 @@ def _get_place_details(reference, api_key, sensor=False):
     reference -- The unique Google reference for the required place.
     """
     url, detail_response = _fetch_remote_json(GooglePlaces.DETAIL_API_URL,
-                                              {'reference': reference,
+                                              {'placeid': reference,
                                                'sensor': str(sensor).lower(),
                                                'key': api_key})
     _validate_response(url, detail_response)
