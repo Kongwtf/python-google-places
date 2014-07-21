@@ -106,7 +106,7 @@ def _get_place_details(reference, api_key, sensor=False, place_id=None):
     """
     if place_id is not None:
         url, detail_response = _fetch_remote_json(GooglePlaces.DETAIL_API_URL,
-                                              {'place_id': place_id,
+                                              {'placeid': place_id,
                                                'sensor': str(sensor).lower(),
                                                'key': api_key})
     else:
@@ -336,7 +336,7 @@ class GooglePlaces(object):
         sensor    -- Boolean flag denoting if the location came from a
                      device using its' location sensor (default False).
         """
-        place_details = _get_place_details(reference, self.api_key, sensor, place_id=place_id)
+        place_details = _get_place_details(reference, self.api_key, sensor=sensor, place_id=place_id)
         return Place(self, place_details)
 
     def add_place(self, **kwargs):
@@ -657,7 +657,7 @@ class Place(object):
         if self._details is None:
             self._details = _get_place_details(
                     self.reference, self._query_instance.api_key,
-                    self._query_instance.sensor)
+                    self._query_instance.sensor, None)
 
     @cached_property
     def photos(self):
