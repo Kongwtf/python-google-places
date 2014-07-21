@@ -328,7 +328,7 @@ class GooglePlaces(object):
                         self.api_key), json.dumps(data), use_http_post=True)
         _validate_response(url, checkin_response)
 
-    def get_place(self, reference, sensor=False):
+    def get_place(self, reference, sensor=False, place_id=None):
         """Gets a detailed place object.
 
         keyword arguments:
@@ -336,7 +336,7 @@ class GooglePlaces(object):
         sensor    -- Boolean flag denoting if the location came from a
                      device using its' location sensor (default False).
         """
-        place_details = _get_place_details(reference, self.api_key, sensor)
+        place_details = _get_place_details(reference, self.api_key, sensor, place_id=place_id)
         return Place(self, place_details)
 
     def add_place(self, **kwargs):
