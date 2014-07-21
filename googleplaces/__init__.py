@@ -484,6 +484,7 @@ class Place(object):
     def __init__(self, query_instance, place_data):
         self._query_instance = query_instance
         self._id = place_data['id']
+        self._place_id = place_data.get('place_id')
         self._reference = place_data['reference']
         self._name = place_data['name']
         self._vicinity = place_data.get('vicinity', '')
