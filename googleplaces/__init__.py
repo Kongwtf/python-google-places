@@ -98,13 +98,19 @@ def geocode_location(location, sensor=False):
         raise GooglePlacesError, error_detail
     return geo_response['results'][0]['geometry']['location']
 
-def _get_place_details(reference, api_key, sensor=False):
+def _get_place_details(reference, api_key, sensor=False, place_id=None):
     """Gets a detailed place response.
 
     keyword arguments:
     reference -- The unique Google reference for the required place.
     """
-    url, detail_response = _fetch_remote_json(GooglePlaces.DETAIL_API_URL,
+    if place_id is not None:
+        url, detail_response = _fetch_remote_json(GooglePlaces.DETAIL_API_URL,
+                                              {'placeid': place_id,
+                                               'sensor': str(sensor).lower(),
+                                               'key': api_key})
+    else:
+        url, detail_response = _fetch_remote_json(GooglePlaces.DETAIL_API_URL,
                                               {'reference': reference,
                                                'sensor': str(sensor).lower(),
                                                'key': api_key})
@@ -322,7 +328,7 @@ class GooglePlaces(object):
                         self.api_key), json.dumps(data), use_http_post=True)
         _validate_response(url, checkin_response)
 
-    def get_place(self, reference, sensor=False):
+    def get_place(self, reference, sensor=False, place_id=None):
         """Gets a detailed place object.
 
         keyword arguments:
@@ -330,7 +336,7 @@ class GooglePlaces(object):
         sensor    -- Boolean flag denoting if the location came from a
                      device using its' location sensor (default False).
         """
-        place_details = _get_place_details(reference, self.api_key, sensor)
+        place_details = _get_place_details(reference, self.api_key, sensor=sensor, place_id=place_id)
         return Place(self, place_details)
 
     def add_place(self, **kwargs):
@@ -484,6 +490,7 @@ class Place(object):
     def __init__(self, query_instance, place_data):
         self._query_instance = query_instance
         self._id = place_data['id']
+        self._place_id = place_data.get('place_id')
         self._reference = place_data['reference']
         self._name = place_data['name']
         self._vicinity = place_data.get('vicinity', '')
@@ -520,6 +527,17 @@ class Place(object):
         cached data about this Place, but the same token is not guaranteed to
         be returned for any given Place across different searches."""
         return self._reference
+
+    @property
+    def place_id(self):
+        """Returns the unique stable identifier denoting this place.
+
+        This identifier MUST be used to retrieve information about this
+        place, but is guaranteed to be valid across sessions. It can be used
+        to consolidate data about this Place, and to verify the identity of a
+        Place across separate searches. See https://developers.google.com/places/documentation/details
+        """
+        return self._place_id
 
     @property
     def id(self):
@@ -650,7 +668,7 @@ class Place(object):
         if self._details is None:
             self._details = _get_place_details(
                     self.reference, self._query_instance.api_key,
-                    self._query_instance.sensor)
+                    self._query_instance.sensor, None)
 
     @cached_property
     def photos(self):
